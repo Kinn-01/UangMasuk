@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowRight
@@ -75,69 +77,73 @@ fun RootScreen(
                 Column(
                     modifier = Modifier
                         .fillMaxHeight()
-                        .padding(vertical = 16.dp)
                 ) {
 
-                    // ===== HEADER =====
-                    Row(
-                        modifier = Modifier
-                            .padding(horizontal = 16.dp)
-                            .fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
+                    // ===== HEADER (FIXED) =====
+                    Column(
+                        modifier = Modifier.padding(vertical = 16.dp)
                     ) {
-                        Box(
+                        Row(
                             modifier = Modifier
-                                .size(40.dp)
-                                .background(
-                                    color = Color(0xFF2ECC71),
-                                    shape = CircleShape
-                                ),
-                            contentAlignment = Alignment.Center
+                                .padding(horizontal = 16.dp)
+                                .fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Text(
-                                text = "J",
-                                color = Color.White,
-                                fontWeight = FontWeight.Bold
+                            Box(
+                                modifier = Modifier
+                                    .size(40.dp)
+                                    .background(
+                                        color = Color(0xFF2ECC71),
+                                        shape = CircleShape
+                                    ),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = "J",
+                                    color = Color.White,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+
+                            Spacer(Modifier.width(12.dp))
+
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text("John Doe", fontWeight = FontWeight.Bold)
+                                Text(
+                                    "Admin",
+                                    fontSize = 12.sp,
+                                    color = Color.Gray
+                                )
+                            }
+
+                            Icon(
+                                Icons.Default.KeyboardArrowRight,
+                                contentDescription = null
                             )
                         }
 
-                        Spacer(Modifier.width(12.dp))
-
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(
-                                text = "John Doe",
-                                fontWeight = FontWeight.Bold
-                            )
-                            Text(
-                                text = "Admin",
-                                fontSize = 12.sp,
-                                color = Color.Gray
-                            )
-                        }
-
-                        Icon(
-                            Icons.Default.KeyboardArrowRight,
-                            contentDescription = null
-                        )
+                        Spacer(Modifier.height(16.dp))
                     }
 
-                    Spacer(Modifier.height(16.dp))
+                    // ===== MENU (SCROLLABLE) =====
+                    LazyColumn(
+                        modifier = Modifier.fillMaxHeight()
+                    ) {
+                        itemsIndexed(drawerMenus) { index, item ->
+                            DrawerMenuRow(
+                                title = item.title,
+                                icon = item.icon,
+                                selected = index == selectedIndex,
+                                onClick = {
+                                    selectedIndex = index
+                                    scope.launch { drawerState.close() }
 
-                    // ===== MENU =====
-                    drawerMenus.forEachIndexed { index, item ->
-                        DrawerMenuRow(
-                            title = item.title,
-                            icon = item.icon,
-                            selected = index == selectedIndex,
-                            onClick = {
-                                selectedIndex = index
-                                scope.launch { drawerState.close() }
-
-                                if (item.title == "Keuangan") {
-                                    onKeuanganClick()
+                                    if (item.title == "Keuangan") {
+                                        onKeuanganClick()
+                                    }
                                 }
-                            }
-                        )
+                            )
+                        }
                     }
                 }
             }

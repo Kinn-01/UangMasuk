@@ -5,7 +5,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -120,8 +122,15 @@ fun PeriodBottomSheet(
     var showDatePicker by remember { mutableStateOf(false) }
     var customRange by remember { mutableStateOf<Pair<Long, Long>?>(null) }
 
-    ModalBottomSheet(onDismissRequest = onDismiss) {
-        Column(Modifier.padding(16.dp)) {
+    ModalBottomSheet(
+        onDismissRequest = onDismiss
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
+                .padding(16.dp)
+        ) {
 
             Text("Pilih Periode", fontWeight = FontWeight.Bold)
 
@@ -165,6 +174,8 @@ fun PeriodBottomSheet(
             ) {
                 Text("Terapkan")
             }
+
+            Spacer(Modifier.height(24.dp))
         }
     }
 

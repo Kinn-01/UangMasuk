@@ -2,7 +2,9 @@ package com.example.uangmasuk.presentation.detailCashIn
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
@@ -71,10 +73,10 @@ fun DetailCashInScreen(
             Column(
                 modifier = Modifier
                     .padding(paddingValues)
-                    .padding(16.dp),
+                    .padding(16.dp)
+                    .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-
                 DetailItem("Tanggal Dibuat", DateUtils.formatDate(data.transactionDate))
                 DetailItem("Masuk Ke", "Kasir perangkat ke-49")
                 DetailItem("Terima Dari", data.customerName)
@@ -115,7 +117,10 @@ fun DetailCashInScreen(
                 ) {
                     Text("Hapus", color = Color.Red)
                 }
+
+                Spacer(Modifier.height(24.dp))
             }
+
         }
     }
 }
