@@ -4,5 +4,6 @@ import com.example.uangmasuk.data.local.entity.CashInEntity
 
 data class HomeUiState(
     val isLoading: Boolean = false,
-    val cashInList: List<CashInEntity> = emptyList()
+    val cashInList: List<CashInEntity> = emptyList(),
+    val period: PeriodFilter = PeriodFilter.Today
 )

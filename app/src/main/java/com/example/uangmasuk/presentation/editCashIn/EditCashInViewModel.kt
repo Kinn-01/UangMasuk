@@ -4,8 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.uangmasuk.data.local.entity.CashInEntity
 import com.example.uangmasuk.data.repository.CashInRepository
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
@@ -15,6 +17,9 @@ class EditCashInViewModel(
 
     private val _uiState = MutableStateFlow(EditCashInUiState())
     val uiState: StateFlow<EditCashInUiState> = _uiState.asStateFlow()
+
+    private val _event = MutableSharedFlow<EditCashInEvent>()
+    val event = _event.asSharedFlow()
 
     private var cashInId: Int = -1
 
@@ -49,6 +54,7 @@ class EditCashInViewModel(
                 imagePath = state.imagePath
             )
             repository.updateCashIn(entity)
+            _event.emit(EditCashInEvent.Success)
         }
     }
 
@@ -74,5 +80,9 @@ class EditCashInViewModel(
 
     fun onIncomeTypeChange(value: String) {
         _uiState.value = _uiState.value.copy(incomeType = value)
+    }
+
+    sealed class EditCashInEvent {
+        object Success : EditCashInEvent()
     }
 }

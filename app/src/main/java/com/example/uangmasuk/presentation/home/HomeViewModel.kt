@@ -3,6 +3,7 @@ package com.example.uangmasuk.presentation.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.uangmasuk.data.repository.CashInRepository
+import com.example.uangmasuk.utils.DateUtils
 import kotlinx.coroutines.flow.*
 
 class HomeViewModel(
@@ -16,22 +17,30 @@ class HomeViewModel(
     private var currentEndDate: Long = Long.MAX_VALUE
 
     init {
-        loadCashIn()
+        applyPeriod(PeriodFilter.Today)
     }
 
-    fun loadCashIn(
-        startDate: Long = currentStartDate,
-        endDate: Long = currentEndDate
-    ) {
-        currentStartDate = startDate
-        currentEndDate = endDate
+    fun applyPeriod(period: PeriodFilter) {
+        val (start, end) = when (period) {
+            PeriodFilter.Today -> DateUtils.todayRange()
+            PeriodFilter.Yesterday -> DateUtils.yesterdayRange()
+            PeriodFilter.Last7Days -> DateUtils.last7DaysRange()
+            is PeriodFilter.Custom ->
+                DateUtils.startOfDay(period.start) to
+                        DateUtils.endOfDay(period.end)
 
-        repository.getCashInByDateRange(startDate, endDate)
+        }
+
+        _uiState.update { it.copy(isLoading = true, period = period) }
+
+        repository.getCashInByDateRange(start, end)
             .onEach { list ->
-                _uiState.value = HomeUiState(
-                    isLoading = false,
-                    cashInList = list
-                )
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        cashInList = list
+                    )
+                }
             }
             .launchIn(viewModelScope)
     }

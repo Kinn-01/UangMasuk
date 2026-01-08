@@ -16,7 +16,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
@@ -34,7 +33,9 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -60,6 +61,19 @@ fun CustomerListScreen(
     }
 
     val customers by viewModel.customers.collectAsState()
+    var searchQuery by remember { mutableStateOf("") }
+
+    val filteredCustomers = remember(customers, searchQuery) {
+        if (searchQuery.isBlank()) {
+            customers
+        } else {
+            customers.filter { customer ->
+                customer.name.contains(searchQuery, ignoreCase = true) ||
+                        (customer.phone?.contains(searchQuery, ignoreCase = true) == true) ||
+                        (customer.email?.contains(searchQuery, ignoreCase = true) == true)
+            }
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -86,19 +100,20 @@ fun CustomerListScreen(
         ) {
 
             OutlinedTextField(
-                value = "",
-                onValueChange = {},
-                placeholder = { Text("Cari pelanggan di sini") },
+                value = searchQuery,
+                onValueChange = { searchQuery = it },
+                placeholder = { Text("Cari pelanggan disini") },
                 leadingIcon = {
                     Icon(Icons.Default.Search, null)
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp)
+                    .padding(16.dp),
+                singleLine = true
             )
 
             LazyColumn {
-                items(customers) { customer ->
+                items(filteredCustomers) { customer ->
                     CustomerItem(
                         customer = customer,
                         onClick = { onCustomerSelected(customer) }
@@ -128,8 +143,17 @@ fun CustomerItem(
             }
         },
         supportingContent = {
-            customer.phone?.let {
-                Text(it)
+            Column {
+                customer.phone?.let {
+                    Text(it)
+                }
+                customer.email?.let {
+                    Text(
+                        text = it,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color.Gray
+                    )
+                }
             }
         },
         trailingContent = {

@@ -15,7 +15,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -26,7 +25,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import com.example.uangmasuk.di.Injection
 import java.io.File
 import kotlin.let
 import androidx.compose.foundation.rememberScrollState
@@ -40,7 +38,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
-import com.example.uangmasuk.data.local.entity.CustomerEntity
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -53,12 +50,8 @@ fun CashInScreen(
 ) {
     val context = LocalContext.current
     val scrollState = rememberScrollState()
-//    val viewModel = remember {
-//        CashInViewModel(
-//            Injection.provideCashInRepository(context),
-//            Injection.provideCustomerRepository(context)
-//        )
-//    }
+    val snackbarHostState = remember { SnackbarHostState() }
+
 
     val imagePicker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -73,11 +66,36 @@ fun CashInScreen(
     var showIncomeTypeSheet by remember { mutableStateOf(false) }
     var showImagePickerSheet by remember { mutableStateOf(false) }
 
+    LaunchedEffect(Unit) {
+        viewModel.event.collect { event ->
+            when (event) {
+                CashInViewModel.CashInEvent.Success -> {
+                    snackbarHostState.showSnackbar(
+                        message = "Uang masuk berhasil disimpan."
+                    )
+                    onSuccess()
+                }
+            }
+        }
+    }
+
     LaunchedEffect(uiState.isSuccess) {
         if (uiState.isSuccess) onSuccess()
     }
 
     Scaffold(
+        snackbarHost = {
+            SnackbarHost(
+                hostState = snackbarHostState,
+                snackbar = { data ->
+                    Snackbar(
+                        snackbarData = data,
+                        containerColor = Color(0xFF0B6E4F),
+                        contentColor = Color.White
+                    )
+                }
+            )
+        },
         topBar = {
             TopAppBar(
                 title = { Text("Buat Transaksi Uang Masuk") },
@@ -174,7 +192,7 @@ fun CashInScreen(
             Button(
                 onClick = viewModel::saveCashIn,
                 modifier = Modifier.fillMaxWidth(),
-                enabled = !uiState.isLoading
+                enabled = uiState.isFormValid && !uiState.isLoading
             ) {
                 Text("Simpan")
             }
@@ -443,8 +461,4 @@ fun ImagePickerBottomSheet(
     }
 
 }
-
-
-
-
 

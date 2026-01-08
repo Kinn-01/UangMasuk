@@ -9,5 +9,6 @@ data class CashInUiState (
     val transactionDate: Long = System.currentTimeMillis(),
     val imagePath: String? = null,
     val isLoading: Boolean = false,
-    val isSuccess: Boolean = false
+    val isSuccess: Boolean = false,
+    val isFormValid: Boolean = false
 )

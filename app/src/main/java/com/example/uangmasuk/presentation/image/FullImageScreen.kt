@@ -21,7 +21,7 @@ fun FullImageScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Bukti Transfer") },
+                title = { Text("Bukti transfer / nota / kwitansi") },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.Default.ArrowBack, contentDescription = null)

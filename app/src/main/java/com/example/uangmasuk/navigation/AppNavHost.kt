@@ -3,20 +3,14 @@ package com.example.uangmasuk.navigation
 import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.uangmasuk.data.local.entity.CustomerEntity
 import com.example.uangmasuk.di.Injection
 import com.example.uangmasuk.navigationDrawer.RootScreen
 import com.example.uangmasuk.presentation.cashIn.CashInScreen
@@ -72,12 +66,9 @@ fun AppNavHost(
             )
         }
 
-        composable(Routes.CREATE) {
+        composable(Routes.CREATE) { backStackEntry ->
 
             val context = LocalContext.current
-            val backStackEntry = remember {
-                navController.getBackStackEntry(Routes.CREATE)
-            }
 
             val viewModel: CashInViewModel = viewModel(
                 viewModelStoreOwner = backStackEntry,
@@ -143,10 +134,9 @@ fun AppNavHost(
             )
         }
 
-        composable(Routes.CREATE) {
+        composable(Routes.CREATE) { backStackEntry ->
 
             val context = LocalContext.current
-            val backStackEntry = remember { navController.getBackStackEntry(Routes.CREATE) }
 
             val viewModel: CashInViewModel = viewModel(
                 viewModelStoreOwner = backStackEntry,
@@ -156,10 +146,8 @@ fun AppNavHost(
                 )
             )
 
-
             LaunchedEffect(backStackEntry) {
-                backStackEntry
-                    .savedStateHandle
+                backStackEntry.savedStateHandle
                     .get<Int>("selected_customer_id")
                     ?.let { customerId ->
                         viewModel.onCustomerSelected(customerId)
@@ -176,9 +164,6 @@ fun AppNavHost(
                 }
             )
         }
-
-
-
 
         composable(
             route = Routes.DETAIL,

@@ -10,6 +10,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import com.example.uangmasuk.di.Injection
 import com.example.uangmasuk.utils.copyImageToInternalStorage
@@ -23,6 +24,8 @@ fun EditCashInScreen(
     onSuccess: () -> Unit
 ) {
     val context = LocalContext.current
+    val snackbarHostState = remember { SnackbarHostState() }
+
     val viewModel = remember {
         EditCashInViewModel(
             Injection.provideCashInRepository(context)
@@ -43,6 +46,20 @@ fun EditCashInScreen(
         viewModel.loadCashIn(cashInId)
     }
 
+    LaunchedEffect(Unit) {
+        viewModel.event.collect { event ->
+            when (event) {
+                EditCashInViewModel.EditCashInEvent.Success -> {
+                    snackbarHostState.showSnackbar(
+                        message = "Uang masuk berhasil disimpan."
+                    )
+                    onSuccess()
+                }
+            }
+        }
+    }
+
+
     if (uiState.isLoading) {
         Box(
             modifier = Modifier.fillMaxSize(),
@@ -54,6 +71,18 @@ fun EditCashInScreen(
     }
 
     Scaffold(
+        snackbarHost = {
+            SnackbarHost(
+                hostState = snackbarHostState,
+                snackbar = { data ->
+                    Snackbar(
+                        snackbarData = data,
+                        containerColor = Color(0xFF0B6E4F),
+                        contentColor = Color.White
+                    )
+                }
+            )
+        },
         topBar = {
             TopAppBar(
                 title = { Text("Edit Uang Masuk") },
@@ -64,7 +93,8 @@ fun EditCashInScreen(
                 }
             )
         }
-    ) { padding ->
+    )
+    { padding ->
 
         CashInForm(
             paddingValues = padding,
@@ -84,9 +114,8 @@ fun EditCashInScreen(
             },
             onSubmit = {
                 viewModel.updateCashIn()
-                onSuccess()
             },
-            submitText = "Perbarui"
+            submitText = "Simpan"
         )
     }
 }

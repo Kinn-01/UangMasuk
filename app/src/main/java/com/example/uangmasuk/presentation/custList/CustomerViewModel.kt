@@ -3,7 +3,6 @@ package com.example.uangmasuk.presentation.custList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.uangmasuk.data.local.entity.CustomerEntity
-
 import com.example.uangmasuk.data.repository.CustomerRepository
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
@@ -39,7 +38,5 @@ class CustomerViewModel(
             onSuccess()
         }
     }
-
-
 }
 
